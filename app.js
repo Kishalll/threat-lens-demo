@@ -401,6 +401,9 @@ async function protectImage() {
 function handleVerifyImageSelect(event) {
   const file = event.target.files?.[0];
   if (!file) return;
+
+  // Allow selecting the same file again in subsequent uploads.
+  event.target.value = '';
   
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -419,6 +422,7 @@ function renderVerifyPreview() {
   
   if (state.verifyImage) {
     container.innerHTML = `
+      <input type="file" id="verifyImageInput" accept="image/*" hidden onchange="handleVerifyImageSelect(event)">
       <img class="image-preview" src="${state.verifyImage.dataUrl}" alt="Selected image" style="max-height: 200px; margin-bottom: 12px;" />
       <p>Image ready for verification</p>
     `;
