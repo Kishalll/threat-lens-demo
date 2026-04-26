@@ -455,96 +455,191 @@ async function verifyImage() {
   const resultContainer = document.getElementById('verifyResult');
   resultContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   
-  // Simulate verification
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  // Simulate verification delay
+  await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
   
   const cloudCheckEnabled = document.getElementById('cloudCheckToggle').checked;
   
-  // Simulate random verification result (for demo purposes)
-  const isAuthentic = Math.random() > 0.3; // 70% chance of authentic
+  // All possible verification outcomes from the real app
+  const outcomes = [
+    'AUTHENTIC',
+    'TAMPERED',
+    'INVALID_SIGNATURE',
+    'CLONE_APP',
+    'REVOKED',
+    'OFFLINE',
+    'NO_PROTECTION',
+    'CORRUPT',
+  ];
   
-  if (isAuthentic) {
-    resultContainer.innerHTML = `
-      <div class="verification-status authentic">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <div class="verification-status-text authentic">
-          <h4>Authentic Image</h4>
-          <p>All verification checks passed. Image is genuine.</p>
-        </div>
-      </div>
-      <div class="checks-list">
-        <div class="check-item pass">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          EXIF payload found
-        </div>
-        <div class="check-item pass">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Signature valid
-        </div>
-        <div class="check-item pass">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Hash match (no tampering)
-        </div>
-        <div class="check-item pass">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Master certificate valid
-        </div>
-        ${cloudCheckEnabled ? `
-        <div class="check-item pass">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Cloud registry: Active
-        </div>
-        ` : ''}
-      </div>
-    `;
-  } else {
-    resultContainer.innerHTML = `
-      <div class="verification-status tampered">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-        <div class="verification-status-text tampered">
-          <h4>No Protection Found</h4>
-          <p>This image does not contain a ThreatLens signature</p>
-        </div>
-      </div>
-      <div class="checks-list">
-        <div class="check-item fail">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-          No EXIF payload detected
-        </div>
-        <div class="check-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="16"/>
-            <line x1="12" y1="4" x2="12" y2="4.01"/>
-          </svg>
-          Image cannot be verified as authentic
-        </div>
-      </div>
-      <p style="margin-top: 12px; font-size: 13px; color: var(--color-text-secondary);">
-        This is expected for images not signed by ThreatLens. Use the Protect feature to sign images.
-      </p>
-    `;
+  // Weighted random selection (AUTHENTIC and NO_PROTECTION more common)
+  const weights = [0.25, 0.15, 0.12, 0.12, 0.10, 0.10, 0.10, 0.06];
+  const random = Math.random();
+  let cumulative = 0;
+  let selectedOutcome = outcomes[0];
+  
+  for (let i = 0; i < outcomes.length; i++) {
+    cumulative += weights[i];
+    if (random <= cumulative) {
+      selectedOutcome = outcomes[i];
+      break;
+    }
   }
+  
+  // For demo: if user just protected an image, show AUTHENTIC
+  if (state.protectImage && state.verifyImage === state.protectImage) {
+    selectedOutcome = 'AUTHENTIC';
+  }
+  
+  renderVerificationResult(selectedOutcome, cloudCheckEnabled);
+}
+
+function renderVerificationResult(outcome, cloudCheckEnabled) {
+  const resultContainer = document.getElementById('verifyResult');
+  
+  const outcomeConfig = {
+    AUTHENTIC: {
+      statusClass: 'authentic',
+      icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+      title: 'Authentic Image',
+      summary: 'All local and cloud checks passed. Image is authentic and untampered.',
+      details: ['SHA-256 hash check passed.', 'ECDSA signature check passed.', 'Master certificate check passed.', 'Cloud registry confirms active trusted device.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: true },
+        { label: 'Signature valid', pass: true },
+        { label: 'Master certificate valid', pass: true },
+        { label: 'Cloud registry: Active', pass: cloudCheckEnabled, skip: !cloudCheckEnabled },
+      ],
+    },
+    TAMPERED: {
+      statusClass: 'tampered',
+      icon: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+      title: 'Tampered Image',
+      summary: 'Image content was modified after signing. Hash mismatch detected.',
+      details: ['SHA-256 hash mismatch detected.', 'Perceptual hash indicates content changes.', 'Image integrity compromised.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: false },
+        { label: 'Signature valid', pass: true },
+        { label: 'Master certificate valid', pass: true },
+        { label: 'Cloud registry: Active', pass: cloudCheckEnabled, skip: !cloudCheckEnabled },
+      ],
+    },
+    INVALID_SIGNATURE: {
+      statusClass: 'tampered',
+      icon: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+      title: 'Invalid Signature',
+      summary: 'Signature validation failed. The signed payload was altered or forged.',
+      details: ['ECDSA signature check failed for payload.', 'Payload may have been modified after signing.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: true },
+        { label: 'Signature valid', pass: false },
+        { label: 'Master certificate valid', pass: true },
+        { label: 'Cloud registry: Active', pass: cloudCheckEnabled, skip: !cloudCheckEnabled },
+      ],
+    },
+    CLONE_APP: {
+      statusClass: 'tampered',
+      icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+      title: 'Clone App Detected',
+      summary: 'Master certificate failed. This image was not signed by an official app trust chain.',
+      details: ['Master certificate does not validate against embedded master public key.', 'Possible clone or modified app.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: true },
+        { label: 'Signature valid', pass: true },
+        { label: 'Master certificate valid', pass: false },
+        { label: 'Cloud registry: Active', pass: false, skip: !cloudCheckEnabled },
+      ],
+    },
+    REVOKED: {
+      statusClass: 'tampered',
+      icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+      title: 'Device Revoked',
+      summary: 'Cloud registry reports this signing device as revoked.',
+      details: ['Device registration has been revoked.', 'Image may have been signed by a compromised device.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: true },
+        { label: 'Signature valid', pass: true },
+        { label: 'Master certificate valid', pass: true },
+        { label: 'Cloud registry: Revoked', pass: false, skip: !cloudCheckEnabled },
+      ],
+    },
+    OFFLINE: {
+      statusClass: 'tampered',
+      icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><path d="M12 16h.01"/>',
+      title: 'Offline Mode',
+      summary: 'Local cryptographic checks passed, but cloud status could not be confirmed.',
+      details: ['Network unavailable for cloud verification.', 'Local checks passed. Cloud check skipped.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: true },
+        { label: 'Signature valid', pass: true },
+        { label: 'Master certificate valid', pass: true },
+        { label: 'Cloud registry: Unavailable', pass: false, skip: !cloudCheckEnabled },
+      ],
+    },
+    NO_PROTECTION: {
+      statusClass: 'tampered',
+      icon: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+      title: 'No Protection Found',
+      summary: 'This image does not contain a ThreatLens signature payload.',
+      details: ['No signed EXIF payload detected.', 'Image was not protected by ThreatLens.'],
+      checks: [
+        { label: 'EXIF payload found', pass: false },
+        { label: 'SHA-256 hash match', pass: false, skip: true },
+        { label: 'Signature valid', pass: false, skip: true },
+        { label: 'Master certificate valid', pass: false, skip: true },
+        { label: 'Cloud registry: N/A', pass: false, skip: true },
+      ],
+    },
+    CORRUPT: {
+      statusClass: 'tampered',
+      icon: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+      title: 'Corrupt Payload',
+      summary: 'Payload is valid locally, but cloud registry validation failed.',
+      details: ['Cloud registry returned error.', 'Payload may be from an unregistered device.'],
+      checks: [
+        { label: 'EXIF payload found', pass: true },
+        { label: 'SHA-256 hash match', pass: true },
+        { label: 'Signature valid', pass: true },
+        { label: 'Master certificate valid', pass: true },
+        { label: 'Cloud registry: Failed', pass: false, skip: !cloudCheckEnabled },
+      ],
+    },
+  };
+  
+  const config = outcomeConfig[outcome];
+  
+  resultContainer.innerHTML = `
+    <div class="verification-status ${config.statusClass}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        ${config.icon}
+      </svg>
+      <div class="verification-status-text ${config.statusClass}">
+        <h4>${config.title}</h4>
+        <p>${config.summary}</p>
+      </div>
+    </div>
+    <div class="checks-list">
+      ${config.checks.filter(c => !c.skip).map(check => `
+        <div class="check-item ${check.pass ? 'pass' : 'fail'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            ${check.pass 
+              ? '<polyline points="20 6 9 17 4 12"/>' 
+              : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}
+          </svg>
+          ${check.label}
+        </div>
+      `).join('')}
+    </div>
+    <div style="margin-top: 16px; padding: 12px; background: rgba(131, 208, 174, 0.1); border: 1px solid var(--color-accent); border-radius: 12px; font-size: 13px; color: var(--color-text-secondary);">
+      <strong style="color: var(--color-accent);">Demo Mode:</strong> This result is randomly simulated to demonstrate all possible verification outcomes from the real ThreatLens app (AUTHENTIC, TAMPERED, INVALID_SIGNATURE, CLONE_APP, REVOKED, OFFLINE, NO_PROTECTION, CORRUPT). The actual mobile app performs real cryptographic verification.
+    </div>
+  `;
 }
 
 // ===== BREACH MONITOR =====

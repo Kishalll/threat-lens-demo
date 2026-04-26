@@ -60,6 +60,7 @@ body {
   padding: 32px 0 24px;
   border-bottom: 1px solid var(--color-border);
   margin-bottom: 24px;
+  position: relative;
 }
 
 .header-content {
@@ -67,6 +68,46 @@ body {
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+/* ===== Header Badge (Top Right) ===== */
+.header-badge {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  text-align: right;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.badge-content {
+  display: inline-block;
+  padding: 8px 14px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.badge-content strong {
+  color: var(--color-accent);
+}
+
+.badge-separator {
+  margin: 0 6px;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .header-badge {
+    position: static;
+    text-align: left;
+    margin-top: 16px;
+  }
+  
+  .badge-content {
+    display: block;
+  }
 }
 
 .logo {
@@ -907,13 +948,13 @@ body {
   padding: 24px 0;
   text-align: center;
   color: var(--color-text-tertiary);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .demo-notice {
   margin-top: 6px;
-  font-size: 12px;
-  opacity: 0.7;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 /* ===== Loading Spinner ===== */
