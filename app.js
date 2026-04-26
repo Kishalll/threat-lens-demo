@@ -416,13 +416,32 @@ function handleVerifyImageSelect(event) {
   reader.readAsDataURL(file);
 }
 
+function triggerVerifyImagePicker() {
+  const input = document.getElementById('verifyImageInput');
+  if (!input) {
+    console.error('Verify image input not found');
+    return;
+  }
+
+  try {
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+  } catch (e) {
+    // Fallback to click for browsers that reject showPicker.
+  }
+
+  input.click();
+}
+
 function renderVerifyPreview() {
   const container = document.getElementById('verifyUploadArea');
   const btn = document.getElementById('verifyBtn');
   
   if (state.verifyImage) {
     container.innerHTML = `
-      <input type="file" id="verifyImageInput" accept="image/*" hidden onchange="handleVerifyImageSelect(event)">
+      <input type="file" id="verifyImageInput" accept="image/*" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0;" onchange="handleVerifyImageSelect(event)">
       <img class="image-preview" src="${state.verifyImage.dataUrl}" alt="Selected image" style="max-height: 200px; margin-bottom: 12px;" />
       <p>Image ready for verification</p>
     `;

@@ -223,8 +223,8 @@
               <div class="card-header">
                 <h3>Upload Image to Verify</h3>
               </div>
-              <div class="image-upload-area" id="verifyUploadArea">
-                <input type="file" id="verifyImageInput" accept="image/*" hidden onchange="handleVerifyImageSelect(event)">
+              <div class="image-upload-area" id="verifyUploadArea" onclick="triggerVerifyImagePicker()">
+                <input type="file" id="verifyImageInput" accept="image/*" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0;" onchange="handleVerifyImageSelect(event)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                   <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -233,7 +233,7 @@
                 <p>Click to upload or drag & drop</p>
                 <span class="hint">Protected images show verification status</span>
               </div>
-              <button class="btn btn-primary" onclick="document.getElementById('verifyImageInput').click()">
+              <button class="btn btn-primary" onclick="triggerVerifyImagePicker()">
                 Choose Image
               </button>
             </div>
