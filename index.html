@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThreatLens - Digital Safety Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="logo-text">ThreatLens</span>
+        </div>
+        <p class="tagline">AI-Powered Digital Safety & Image Trust Verification</p>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span>Notification Scanner</span>
+      </button>
+      <button class="tab-btn" data-tab="image-shield">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Image Shield</span>
+      </button>
+      <button class="tab-btn" data-tab="breach-monitor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4"/>
+          <path d="M12 16h.01"/>
+        </svg>
+        <span>Breach Monitor</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- NOTIFICATION SCANNER TAB -->
+      <section id="notifications" class="tab-content active">
+        <div class="section-header">
+          <h2>Notification Interception & Analysis</h2>
+          <p>AI scans incoming notifications for phishing, scams, and threats in real-time</p>
+        </div>
+
+        <div class="demo-grid">
+          <!-- Notification Inbox Simulation -->
+          <div class="card notification-inbox">
+            <div class="card-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                Simulated Notification Inbox
+              </h3>
+              <button class="btn btn-outline btn-sm" onclick="addRandomNotification()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Random
+              </button>
+            </div>
+
+            <div class="notification-list" id="notificationList">
+              <!-- Sample notifications will be rendered here -->
+            </div>
+
+            <div class="inbox-controls">
+              <button class="btn btn-primary" onclick="scanAllNotifications()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Scan All with AI
+              </button>
+            </div>
+          </div>
+
+          <!-- Scan Results Panel -->
+          <div class="card scan-results">
+            <div class="card-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                AI Analysis Results
+              </h3>
+            </div>
+
+            <div id="scanResultsContainer">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <p>No scans yet. Add notifications and click "Scan All with AI"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+          <h3>How Notification Interception Works</h3>
+          <div class="steps-grid">
+            <div class="step">
+              <div class="step-icon">1</div>
+              <h4>Notification Arrives</h4>
+              <p>App intercepts incoming notifications from SMS, email, and messaging apps</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">2</div>
+              <h4>AI Analysis</h4>
+              <p>Simulated AI analyzes content for phishing patterns, scam indicators, and threats</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">3</div>
+              <h4>Real-time Alert</h4>
+              <p>User receives instant warning with threat classification and safety guidance</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">4</div>
+              <h4>Actionable Insights</h4>
+              <p>AI provides specific recommendations to protect against identified threats</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IMAGE SHIELD TAB -->
+      <section id="image-shield" class="tab-content">
+        <div class="section-header">
+          <h2>Image Protection & Verification</h2>
+          <p>Cryptographically sign images to prove authenticity and detect tampering</p>
+        </div>
+
+        <div class="image-shield-modes">
+          <button class="mode-btn active" data-mode="protect">Protect Image</button>
+          <button class="mode-btn" data-mode="verify">Verify Image</button>
+        </div>
+
+        <!-- PROTECT MODE -->
+        <div id="protect-mode" class="mode-content active">
+          <div class="demo-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Step 1: Select Image</h3>
+              </div>
+              <div class="image-upload-area" id="protectUploadArea">
+                <input type="file" id="protectImageInput" accept="image/*" hidden onchange="handleProtectImageSelect(event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p>Click to upload or drag & drop</p>
+                <span class="hint">Supports JPEG, PNG</span>
+              </div>
+              <button class="btn btn-primary" onclick="document.getElementById('protectImageInput').click()">
+                Choose Image
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Step 2: Protect with Signature</h3>
+              </div>
+              <div id="protectPreview" class="image-preview-container">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  <p>Image preview will appear here</p>
+                </div>
+              </div>
+              <button id="protectBtn" class="btn btn-secondary" onclick="protectImage()" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Protect Image
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Step 3: Signed Payload</h3>
+              </div>
+              <div id="protectResult" class="result-container">
+                <div class="empty-state">
+                  <p>Protection signature will appear here</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VERIFY MODE -->
+        <div id="verify-mode" class="mode-content">
+          <div class="demo-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Upload Image to Verify</h3>
+              </div>
+              <div class="image-upload-area" id="verifyUploadArea">
+                <input type="file" id="verifyImageInput" accept="image/*" hidden onchange="handleVerifyImageSelect(event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p>Click to upload or drag & drop</p>
+                <span class="hint">Protected images show verification status</span>
+              </div>
+              <button class="btn btn-primary" onclick="document.getElementById('verifyImageInput').click()">
+                Choose Image
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Verification Options</h3>
+              </div>
+              <div class="verify-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="cloudCheckToggle" checked>
+                  <span>Enable cloud revocation check</span>
+                </label>
+              </div>
+              <button id="verifyBtn" class="btn btn-secondary" onclick="verifyImage()" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Verify Authenticity
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Verification Result</h3>
+              </div>
+              <div id="verifyResult" class="result-container">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <p>Verification results will appear here</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+          <h3>How Image Shield Works</h3>
+          <div class="steps-grid">
+            <div class="step">
+              <div class="step-icon">1</div>
+              <h4>Device Registration</h4>
+              <p>Each device generates unique cryptographic key pair registered with trust registry</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">2</div>
+              <h4>Image Signing</h4>
+              <p>SHA-256 hash + perceptual hash embedded in EXIF with ECDSA signature</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">3</div>
+              <h4>Tamper Detection</h4>
+              <p>Verification compares hashes to detect any modifications after signing</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">4</div>
+              <h4>Cloud Verification</h4>
+              <p>Optional registry check confirms device wasn't revoked or cloned</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BREACH MONITOR TAB -->
+      <section id="breach-monitor" class="tab-content">
+        <div class="section-header">
+          <h2>Data Breach Monitoring</h2>
+          <p>Monitor your credentials against known data breaches with AI-powered remediation</p>
+        </div>
+
+        <div class="demo-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Add Credential to Monitor
+              </h3>
+            </div>
+
+            <div class="credential-form">
+              <div class="form-group">
+                <label for="credentialInput">Email or Username</label>
+                <input 
+                  type="text" 
+                  id="credentialInput" 
+                  placeholder="Enter email address or username"
+                  onkeypress="if(event.key==='Enter')addCredential()"
+                >
+              </div>
+              <button class="btn btn-primary" onclick="addCredential()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add to Monitor List
+              </button>
+            </div>
+
+            <div class="monitored-credentials" id="monitoredCredentials">
+              <!-- Added credentials will appear here -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v4"/>
+                  <path d="M12 16h.01"/>
+                </svg>
+                Breach Scan Results
+              </h3>
+              <button class="btn btn-outline btn-sm" onclick="scanForBreaches()" id="scanBreachBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <polyline points="1 20 1 14 7 14"/>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                Scan Now
+              </button>
+            </div>
+
+            <div id="breachResults" class="breach-results">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <p>Add credentials and click "Scan Now" to check for breaches</p>
+                <button class="btn btn-outline" onclick="loadDemoBreaches()">
+                  Load Demo Data
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+          <h3>How Breach Monitoring Works</h3>
+          <div class="steps-grid">
+            <div class="step">
+              <div class="step-icon">1</div>
+              <h4>Credential Monitoring</h4>
+              <p>Add emails/usernames to your secure watchlist (stored locally)</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">2</div>
+              <h4>Simulated Database Check</h4>
+              <p>Checks a local breach dataset with realistic demo results</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">3</div>
+              <h4>AI Guidance</h4>
+              <p>Local guidance is generated for each breach result</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">4</div>
+              <h4>Background Alerts</h4>
+              <p>Automatic background checks notify you of new breaches immediately</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>ThreatLens - Google Hackathon Submission</p>
+      <p class="demo-notice">This is an interactive prototype demonstrating core functionality</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
